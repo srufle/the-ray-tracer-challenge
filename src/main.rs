@@ -1,4 +1,4 @@
-pub const EPSILON: f32 = 0.00001;
+pub const EPSILON: f32 = 0.000_01;
 
 fn reverse(value: (f32, f32, f32, f32)) -> (f32, f32, f32, f32) {
     let (x, y, z, w) = value;
@@ -67,6 +67,44 @@ fn div(a: (f32, f32, f32, f32), scale: f32) -> (f32, f32, f32, f32) {
     let z = a.2 / scale;
     let w = a.3 / scale;
     (x, y, z, w)
+}
+
+fn magnitude(a: (f32, f32, f32, f32)) -> f32 {
+    let x_sq = f32::powi(a.0, 2);
+    let y_sq = f32::powi(a.1, 2);
+    let z_sq = f32::powi(a.2, 2);
+    let w_sq = f32::powi(a.3, 2);
+    let sum_of = x_sq + y_sq + z_sq + w_sq;
+    sum_of.sqrt()
+}
+
+fn normalize(a: (f32, f32, f32, f32)) -> (f32, f32, f32, f32) {
+    let mag = magnitude(a);
+    div(a, mag)
+}
+
+#[allow(clippy::let_and_return)]
+fn dot(a: (f32, f32, f32, f32), b: (f32, f32, f32, f32)) -> f32 {
+    let ans = a.0 * b.0;
+    let ans = ans + (a.1 * b.1);
+    let ans = ans + a.2 * b.2;
+    let ans = ans + a.3 * b.3;
+    ans
+}
+
+fn cross(a: (f32, f32, f32, f32), b: (f32, f32, f32, f32)) -> (f32, f32, f32, f32) {
+    let ax = a.0;
+    let ay = a.1;
+    let az = a.2;
+
+    let bx = b.0;
+    let by = b.1;
+    let bz = b.2;
+
+    let x = (ay * bz) - (az * by);
+    let y = (az * bx) - (ax * bz);
+    let z = (ax * by) - (ay * bx);
+    vector(x, y, z)
 }
 
 fn main() {
@@ -246,4 +284,75 @@ mod tests {
         let expected = (100000.0, -200000.0, 300000.0, -400000.0);
         assert_eq!(expected, actual);
     }
+
+    #[test]
+    fn test_magnitude() {
+        let v1 = vector(1.0, 0.0, 0.0);
+        let actual = magnitude(v1);
+        let expected = 1.0;
+        assert_eq!(expected, actual);
+
+        let v1 = vector(0.0, 1.0, 0.0);
+        let actual = magnitude(v1);
+        let expected = 1.0;
+        assert_eq!(expected, actual);
+
+        let v1 = vector(0.0, 0.0, 1.0);
+        let actual = magnitude(v1);
+        let expected = 1.0;
+        assert_eq!(expected, actual);
+
+        let v1 = vector(1.0, 2.0, 3.0);
+        let actual = magnitude(v1);
+        let expected = 3.741_657_5;
+        assert!(equal(actual, expected));
+
+        let v1 = negate(vector(1.0, 2.0, 3.0));
+        let actual = magnitude(v1);
+        let expected = 3.741_657_5;
+        println!("actual magnitude: {}", actual);
+        assert!(equal(actual, expected));
+    }
+
+    #[test]
+    fn test_normalize() {
+        let v1 = vector(4.0, 0.0, 0.0);
+        let actual = normalize(v1);
+        let expected = vector(1.0, 0.0, 0.0);
+        assert_eq!(actual, expected);
+
+        let v1 = vector(1.0, 2.0, 3.0);
+        let actual = normalize(v1);
+        let sqrt_14 = f32::powf(14.0, 0.5);
+        let expected = div(v1, sqrt_14);
+        assert_eq!(actual, expected);
+
+        let actual = magnitude(actual);
+        let expected = 1.0;
+        assert!(equal(actual, expected));
+    }
+
+    #[test]
+    fn test_dot() {
+        let v1 = vector(1.0, 2.0, 3.0);
+        let v2 = vector(2.0, 3.0, 4.0);
+        let actual = dot(v1, v2);
+        let expected = 20.0;
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn test_cross() {
+        let v1 = vector(1.0, 2.0, 3.0);
+        let v2 = vector(2.0, 3.0, 4.0);
+        let actual = cross(v1, v2);
+        let expected = vector(-1.0, 2.0, -1.0);
+        assert_eq!(actual, expected);
+
+        let actual = cross(v2, v1);
+        let expected = vector(1.0, -2.0, 1.0);
+        assert_eq!(actual, expected);
+    }
 }
+// Run tests with output
+// cargo test -- --nocapture
