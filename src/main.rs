@@ -42,6 +42,33 @@ fn sub(a: (f32, f32, f32, f32), b: (f32, f32, f32, f32)) -> (f32, f32, f32, f32)
     (x, y, z, w)
 }
 
+fn negate(a: (f32, f32, f32, f32)) -> (f32, f32, f32, f32) {
+    let x = -a.0;
+    let y = -a.1;
+    let z = -a.2;
+    let w = -a.3;
+    (x, y, z, w)
+}
+
+fn mult(a: (f32, f32, f32, f32), scale: f32) -> (f32, f32, f32, f32) {
+    let x = a.0 * scale;
+    let y = a.1 * scale;
+    let z = a.2 * scale;
+    let w = a.3 * scale;
+    (x, y, z, w)
+}
+
+fn div(a: (f32, f32, f32, f32), scale: f32) -> (f32, f32, f32, f32) {
+    if scale == 0.0 || scale < EPSILON {
+        panic!("scale must be greater than 0.0")
+    }
+    let x = a.0 / scale;
+    let y = a.1 / scale;
+    let z = a.2 / scale;
+    let w = a.3 / scale;
+    (x, y, z, w)
+}
+
 fn main() {
     let p1 = point(4.3, -4.2, 3.1);
     println!("p1: {:?}", p1);
@@ -162,6 +189,61 @@ mod tests {
 
         let actual = sub(v2, v1);
         let expected = vector(2.0, 4.0, 6.0);
+        assert_eq!(expected, actual);
+    }
+    #[test]
+    fn test_negate_tuple() {
+        let t1 = (1.0, -2.0, 3.0, 0.0);
+        let actual = negate(t1);
+        let expected = (-1.0, 2.0, -3.0, 0.0);
+        assert_eq!(expected, actual);
+
+        let t1 = (1.0, -2.0, 3.0, 1.0);
+        let actual = negate(t1);
+        let expected = (-1.0, 2.0, -3.0, -1.0);
+        assert_eq!(expected, actual);
+    }
+
+    #[test]
+    fn test_scalar_mult() {
+        let t1 = (1.0, -2.0, 3.0, -4.0);
+        let actual = mult(t1, 3.5);
+        let expected = (3.5, -7.0, 10.5, -14.0);
+        assert_eq!(expected, actual);
+
+        let t1 = (1.0, -2.0, 3.0, -4.0);
+        let actual = mult(t1, 0.5);
+        let expected = (0.5, -1.0, 1.5, -2.0);
+        assert_eq!(expected, actual);
+    }
+
+    #[test]
+    fn test_scalar_div() {
+        let t1 = (1.0, -2.0, 3.0, -4.0);
+        let actual = div(t1, 2.0);
+        let expected = (0.5, -1.0, 1.5, -2.0);
+        assert_eq!(expected, actual);
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_scalar_div_0() {
+        let t1 = (1.0, -2.0, 3.0, -4.0);
+        let _ = div(t1, 0.0);
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_scalar_div_smaller_than_epsilon() {
+        let t1 = (1.0, -2.0, 3.0, -4.0);
+        let _ = div(t1, EPSILON / 10.0);
+    }
+
+    #[test]
+    fn test_scalar_div_epsilon() {
+        let t1 = (1.0, -2.0, 3.0, -4.0);
+        let actual = div(t1, EPSILON);
+        let expected = (100000.0, -200000.0, 300000.0, -400000.0);
         assert_eq!(expected, actual);
     }
 }
