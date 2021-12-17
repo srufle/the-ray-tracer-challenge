@@ -5,7 +5,7 @@
 //  (The actual units here don’t really matter—maybe they’re seconds, or milliseconds.
 //  Whatever. We’ll just call them “ticks.”)
 
-use crate::trtc::{add, normalize, point, vector};
+use trtc::{add, normalize, point, vector};
 
 #[derive(Debug, Clone, Copy)]
 struct Projectile {
@@ -25,7 +25,7 @@ fn tick(env: Environment, proj: Projectile) -> Projectile {
     let velocity = add(velocity, env.wind);
     Projectile { position, velocity }
 }
-pub fn run() {
+fn main() {
     println!();
     println!("Running ticker");
     println!();

@@ -3,12 +3,5 @@
 version = 3
 
 [[package]]
-name = "the-ray-tracer-challenge"
-version = "0.1.0"
-dependencies = [
- "trtc",
-]
-
-[[package]]
 name = "trtc"
 version = "0.1.0"

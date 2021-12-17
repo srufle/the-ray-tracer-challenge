@@ -1,6 +1,10 @@
-use crate::trtc::{point, reverse, vector};
+use trtc::{point, reverse, vector};
 
-pub fn run() {
+fn main() {
+    println!();
+    println!("Running hello");
+    println!();
+
     let p1 = point(4.3, -4.2, 3.1);
     println!("p1: {:?}", p1);
 
@@ -10,7 +14,4 @@ pub fn run() {
     let zyx = reverse(v1);
 
     println!("wzyx: {:?}", zyx);
-
-    println!("Hello, world!");
-    println!();
 }
