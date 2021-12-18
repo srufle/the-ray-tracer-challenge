@@ -18,6 +18,21 @@ impl Color {
             && f32::abs(self.green - other.green) < EPSILON
             && f32::abs(self.blue - other.blue) < EPSILON
     }
+
+    pub fn black() -> Color {
+        Color {
+            red: 0.0,
+            green: 0.0,
+            blue: 0.0,
+        }
+    }
+    pub fn red() -> Color {
+        Color {
+            red: 1.0,
+            green: 0.0,
+            blue: 0.0,
+        }
+    }
 }
 
 impl Add for Color {
